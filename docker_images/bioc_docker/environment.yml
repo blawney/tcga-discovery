@@ -1,0 +1,11 @@
+name: r-env
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - bioconductor-clusterprofiler
+  - bioconductor-deseq2
+  - bioconductor-org.hs.eg.db
+  - bioconductor-rhdf5
+  - bioconductor-tcgabiolinks
+  - r-base

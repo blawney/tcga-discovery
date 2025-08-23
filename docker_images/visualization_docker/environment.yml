@@ -1,0 +1,12 @@
+name: viz-env
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - dash
+  - dash-bootstrap-components
+  - dash_cytoscape
+  - networkx
+  - pandas
+  - pytables
+  - python
