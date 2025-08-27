@@ -7,5 +7,7 @@ dependencies:
   - bioconductor-deseq2
   - bioconductor-org.hs.eg.db
   - bioconductor-rhdf5
+  - bioconductor-sesame
+  - bioconductor-sesamedata
   - bioconductor-tcgabiolinks
   - r-base

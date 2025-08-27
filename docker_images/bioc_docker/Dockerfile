@@ -40,4 +40,5 @@ ENV PATH="/opt/conda/envs/r-env/bin:${PATH}"
 
 ADD deseq2.R /opt/software/scripts/
 ADD download_cohort.R /opt/software/scripts/
+ADD download_methylation.R /opt/software/scripts/
 ADD run_go.R /opt/software/scripts/
