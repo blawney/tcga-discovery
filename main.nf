@@ -273,6 +273,25 @@ process run_go_on_communities {
         """
 }
 
+
+process prep_methylation_data {
+    container "ghcr.io/blawney/tcga-discovery/tcga-discovery-bioc"
+    cpus 2
+    memory '12 GB'
+
+    publishDir "${output_dir}/${params.tcga_type}/methylation", mode:"copy"
+
+    output:
+        path "${params.tcga_type}.promoter_probe_meta.tsv"
+        path "${params.tcga_type}.promoter_betas.tsv"
+        path "${params.tcga_type}.metadata.tsv"
+
+    script:
+        """
+        /opt/conda/envs/r-env/bin/Rscript /opt/software/scripts/download_methylation.R ${params.tcga_type}
+        """
+}
+
 workflow {
     (raw_count_ch, metadata_ch) = download_cohort()
     (dge_results_ch, norm_counts_ch, ann_ch) = run_dge(raw_count_ch)
@@ -282,4 +301,8 @@ workflow {
     results = overlay_ppi(dge_results_remapped_ch)
     f_ch = results.louvain_gmt.flatten()
     h5_ch = run_go_on_communities(f_ch)
+
+    (probe_meta_ch, beta_ch, methyl_meta_ch) = prep_methylation_data()
+
+
 }

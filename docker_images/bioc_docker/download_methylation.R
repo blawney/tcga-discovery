@@ -22,7 +22,7 @@ query <- GDCquery(
 )
 
 # Download the data
-GDCdownload(query)
+GDCdownload(query, files.per.chunk=10)
 
 # Prepare the data to create a RangedSummarizedExperiment object
 data <- GDCprepare(query)
