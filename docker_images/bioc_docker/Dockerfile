@@ -42,3 +42,4 @@ ADD deseq2.R /opt/software/scripts/
 ADD download_cohort.R /opt/software/scripts/
 ADD download_methylation.R /opt/software/scripts/
 ADD run_go.R /opt/software/scripts/
+ADD download_full_methylation.R /opt/software/scripts/
