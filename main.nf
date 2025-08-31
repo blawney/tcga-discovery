@@ -24,7 +24,7 @@ process download_cohort {
 
     output:
         path "${params.tcga_type}.raw_counts.tsv"
-        path "${params.tcga_type}.metadata.tsv"
+        path "${params.tcga_type}.metadata.rds"
 
     script:
         """
@@ -284,7 +284,7 @@ process prep_methylation_data {
     output:
         path "${params.tcga_type}.promoter_probe_meta.tsv"
         path "${params.tcga_type}.promoter_betas.tsv"
-        path "${params.tcga_type}.metadata.tsv"
+        path "${params.tcga_type}.methylation_metadata.rds"
 
     script:
         """
