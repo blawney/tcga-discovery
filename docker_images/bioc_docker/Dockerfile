@@ -39,7 +39,7 @@ RUN mamba env create -f /opt/software/environment.yml -n "$ENV_NAME"
 ENV PATH="/opt/conda/envs/r-env/bin:${PATH}"
 
 ADD deseq2.R /opt/software/scripts/
-ADD download_cohort.R /opt/software/scripts/
-ADD download_methylation.R /opt/software/scripts/
+ADD download_rnaseq_cohort.R /opt/software/scripts/
 ADD run_go.R /opt/software/scripts/
 ADD download_full_methylation.R /opt/software/scripts/
+ADD prep_methylation_data.R /opt/software/scripts/

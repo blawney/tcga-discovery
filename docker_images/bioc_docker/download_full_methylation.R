@@ -1,8 +1,6 @@
 library(TCGAbiolinks)
 library(SummarizedExperiment)
-library(GenomicRanges)
 library(biomaRt)
-library(dplyr)
 
 args <- commandArgs(trailingOnly = TRUE)
 
@@ -28,4 +26,4 @@ GDCdownload(query, files.per.chunk=10)
 # Prepare the data to create a RangedSummarizedExperiment object
 data <- GDCprepare(query)
 
-save(data, file=sprintf('%s.full_data.rds', tcga_project))
+save(data, file=sprintf('%s.methylation_data.rds', tcga_project))
