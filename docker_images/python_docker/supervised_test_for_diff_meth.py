@@ -16,7 +16,7 @@ def parse_args():
     parser.add_argument('-s', '--style', choices=['hypo', 'hyper'], required=True)
 
     # what fraction of probes need to be non-NaN to keep the row
-    parser.add_argument('-t', '--na_threshold', default=0.5)
+    parser.add_argument('-t', '--na_threshold', default=0.5, type=float)
     return parser.parse_args()
 
 
