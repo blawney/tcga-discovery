@@ -9,6 +9,8 @@ import networkx as nx
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument('-t', '--tcga_type', 
+                        required=True)
     parser.add_argument('--interaction_matrix', 
                         required=True,
                         type=Path)
@@ -52,7 +54,7 @@ def write_gmt_file(gene_sets, output_fname):
             gs = '\t'.join(gene_set)
             fout.write(f'gs{i}\t-\t{gs}\n')
 
-def create_graph(interaction_df, graph_label):
+def create_graph(interaction_df, tcga_type, graph_label):
     # create the interaction graph
     G = nx.Graph()
     G.add_edges_from(interaction_df[['preferred_name1','preferred_name2']].to_records(index=False))
@@ -60,17 +62,17 @@ def create_graph(interaction_df, graph_label):
     # find communities and write to a GMT-format file:
     communities = nx.community.louvain_communities(G)
     communities = [x for x in communities if len(x) >= args.min_community_size]
-    write_gmt_file(communities, f'louvain_communities.{graph_label}.gmt')
+    write_gmt_file(communities, f'{tcga_type}.louvain_communities.{graph_label}.gmt')
 
     # collect some basic node metrics and save
     btn_c = pd.Series(nx.betweenness_centrality(G), name='betweenness')
     degree_c = pd.Series(nx.degree_centrality(G), name='degree')
     evector_c = pd.Series(nx.eigenvector_centrality(G, max_iter=1000), name='evector_centrality')
     stats_df = pd.concat([btn_c, degree_c, evector_c], axis=1)
-    stats_df.to_csv(f'network_stats.{graph_label}.tsv', sep='\t')
+    stats_df.to_csv(f'{tcga_type}.network_stats.{graph_label}.tsv', sep='\t')
     
     # save the graph as a pickle
-    with open(f'{graph_label}.pkl', "wb") as f:
+    with open(f'{tcga_type}.graph.{graph_label}.pkl', "wb") as f:
         pickle.dump(G, f)
 
 
@@ -102,7 +104,7 @@ if __name__ == '__main__':
     interaction_df = pd.merge(interaction_df, mapping_df, left_on='protein1', right_index=True)
     interaction_df = pd.merge(interaction_df, mapping_df, left_on='protein2', right_index=True, suffixes=['1','2'])
 
-    create_graph(interaction_df, 'full')
+    create_graph(interaction_df, args.tcga_type, 'full')
 
     interaction_filter = full_interaction_df.apply(has_both_proteins, axis=1, args=(diff_protein_set,))
     interaction_df = full_interaction_df.loc[interaction_filter]
@@ -111,4 +113,4 @@ if __name__ == '__main__':
     interaction_df = pd.merge(interaction_df, mapping_df, left_on='protein1', right_index=True)
     interaction_df = pd.merge(interaction_df, mapping_df, left_on='protein2', right_index=True, suffixes=['1','2'])
 
-    create_graph(interaction_df, 'dge_only')
+    create_graph(interaction_df, args.tcga_type, 'dge_only')

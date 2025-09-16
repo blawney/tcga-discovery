@@ -16,11 +16,6 @@ RUN mkdir -p /opt/software
 RUN mkdir -p /opt/software/resources
 RUN mkdir -p /opt/software/scripts
 
-# Download the prior files into this Docker image:
-RUN curl https://granddb.s3.amazonaws.com/optPANDA/ppi/ppi_complete.txt -o /opt/software/resources/tissues_ppi.tsv
-RUN curl https://granddb.s3.amazonaws.com/optPANDA/motifs/Hugo_motifCellLine.txt -o /opt/software/resources/tissues_motif.tsv
-RUN curl ftp://ftp.broadinstitute.org://pub/gsea/msigdb/human/annotations/Human_Ensembl_Gene_ID_MSigDB.v2023.1.Hs.chip -o /opt/software/resources/Human_Ensembl_Gene_ID_MSigDB.v2023.1.Hs.chip
-
 # Add the various python requirements and script files
 ADD requirements.txt /opt/software/
 
@@ -38,3 +33,6 @@ RUN cd /opt/software && \
 
 ADD map_ensg_to_symbol.py /opt/software/scripts/
 ADD overlay_ppi.py /opt/software/scripts/
+ADD supervised_test_for_diff_meth.py /opt/software/scripts/
+ADD test_for_meth_regulation.py /opt/software/scripts/
+ADD process_gtf.py /opt/software/scripts/
