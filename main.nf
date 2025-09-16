@@ -305,6 +305,7 @@ process run_go_on_communities {
 
     script:
         file_base = gmt_file.baseName
+        tcga_type = file_base.tokenize(".")[0]
         """
         touch "${file_base}.h5"
         /opt/conda/envs/r-env/bin/Rscript /opt/software/scripts/run_go.R \
@@ -493,8 +494,8 @@ workflow {
 
     // join the normalized counts to the methylation RDS so we can
     // "align" the corresponding samples
-    norm_count_ch = symbol_remapped_ch.map {
-        it -> [it[0], it[1]] // the tcga type and norm counts only
+    norm_count_ch = dge_results_ch.map {
+        it -> [it[0], it[2]] // the tcga type and norm counts (with ENSG IDs) only
     }
     prep_meth_input_ch = norm_count_ch.join(meth_rds_ch)
 
