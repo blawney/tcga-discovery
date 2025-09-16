@@ -72,6 +72,7 @@ if __name__ == '__main__':
 
     # filter the counts to only get the samples corresponding to low- and high-expression
     # of the driver gene
+    ann_df.index = ['-'.join(x.split('-')[:4]) for x in ann_df.index]
     nc_low = norm_counts[ann_df.index[ann_df['expression_state'] == 'low']]
     nc_high = norm_counts[ann_df.index[ann_df['expression_state'] == 'high']]
 
