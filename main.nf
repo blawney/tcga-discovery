@@ -382,7 +382,6 @@ process get_differential_probes {
     
     script:
         probe_class = tcga_and_probe_class_key.tokenize('+')[1]
-        //out_key = tcga_and_probe_class_key + "+" style
         """
         /py_venv/bin/python3 /opt/software/scripts/supervised_test_for_diff_meth.py \
             -m ${betas} \
@@ -427,9 +426,10 @@ process test_probes_vs_genes {
         tuple val(probe_class), val(tcga_type), path(normalized_counts), path(betas), path(diff_probe_test_results), path(annotations), path(gene_neighbors)
 
     output:
-        path("*.probe_to_gene_results.tsv")
+        tuple val(output_key), path("*.probe_to_gene_results.tsv")
 
     script:
+        output_key = tcga_type + "+" + probe_class
         """
         /py_venv/bin/python3 /opt/software/scripts/test_for_meth_regulation.py \
             -m ${diff_probe_test_results} \
@@ -437,6 +437,42 @@ process test_probes_vs_genes {
             -n ${normalized_counts} \
             -t ${gene_neighbors} \
             -a ${annotations}
+        """
+}
+
+process run_go_on_diff_meth_assoc_genes {
+
+    container "ghcr.io/blawney/tcga-discovery/tcga-discovery-python"
+    cpus 2
+    memory '8 GB'
+
+    publishDir "${output_dir}/${tcga_type}/methylation", mode:"copy"
+
+    input:
+        tuple val(key), path('f_*.tsv', arity: '2')
+        path(gene_mapping)
+
+    output:
+        path("${gmt_file}")
+        path("${h5_file}")
+
+    script:
+        def contents = key.tokenize("+")
+        tcga_type = contents[0]
+        probe_style = contents[1]
+        gmt_file = "${tcga_type}.${probe_style}.gmt"
+        h5_file = "${tcga_type}.${probe_style}.h5"
+        """
+        /py_venv/bin/python3 write_gmt.py \
+            -p 0.0001 \
+            -m ${gene_mapping} \
+            f_1.tsv \
+            f_2.tsv
+
+        touch "${h5_file}"
+        /opt/conda/envs/r-env/bin/Rscript /opt/software/scripts/run_go.R \
+            ${gmt_file} \
+            "${h5_file}"
         """
 }
 
@@ -558,7 +594,10 @@ workflow {
         [probe_style] + [it[0]] + it[2..-1]
     }.combine(neighbors_file_ch, by:0)
     
+    // returns a tuple of a combo output key (tcga type + probe style)
+    // and a file of "regulation" results
+    probe_testing_result_ch = test_probes_vs_genes(meth_reg_test_input_ch)
+    probe_testing_result_ch = probe_testing_result_ch.groupTuple()
 
-    test_probes_vs_genes(meth_reg_test_input_ch)
-
+    run_go_on_diff_meth_assoc_genes(probe_testing_result_ch, gene_mapping_ch)
 }

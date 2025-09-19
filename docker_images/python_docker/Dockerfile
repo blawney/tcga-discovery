@@ -36,3 +36,4 @@ ADD overlay_ppi.py /opt/software/scripts/
 ADD supervised_test_for_diff_meth.py /opt/software/scripts/
 ADD test_for_meth_regulation.py /opt/software/scripts/
 ADD process_gtf.py /opt/software/scripts/
+ADD write_gmt.py /opt/software/scripts/
