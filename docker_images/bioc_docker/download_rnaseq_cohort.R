@@ -36,15 +36,19 @@ GDCdownload(normal_query)
 
 # Prepare the data to create a SummarizedExperiment object
 data <- GDCprepare(query)
-normal_data <- GDCprepare(normal_query)
 
 # Access raw counts for all samples
 raw_counts <- assay(data)        # genes x samples matrix
 metadata <- colData(data)        # sample metadata
 
 # get the metadata for the normal samples
-normal_metadata <- colData(normal_data)
-selected_samples <- setdiff(rownames(metadata), rownames(normal_metadata))
+if(!is.null(normal_query)){
+  normal_data <- GDCprepare(normal_query)
+  normal_metadata <- colData(normal_data)
+  selected_samples <- setdiff(rownames(metadata), rownames(normal_metadata))
+} else {
+  selected_samples <- rownames(metadata)
+}
 
 # now keep only those non-normal:
 raw_counts <- raw_counts[, selected_samples]
